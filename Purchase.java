@@ -3,10 +3,12 @@ package budgetManager;
 class Purchase {
 	private double price;
 	private String name;
+	private Type type;
 	
-	public Purchase(double price, String name) {
+	public Purchase(double price, String name, Type type) {
 		this.price = price;
 		this.name = name;
+		this.type = type;
 	}
 	
 	public double getPrice() {
@@ -20,6 +22,12 @@ class Purchase {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Type getType() {
+		return type;
+	}
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 	@Override
