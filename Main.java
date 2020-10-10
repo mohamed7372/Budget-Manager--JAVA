@@ -1,5 +1,8 @@
 package budgetManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -24,13 +27,20 @@ public class Main {
 			case 4:
 				balance();
 				break;
+			case 5:
+				saveData();
+				break;
+			case 6:
+				loadData();
+				sc = new Scanner(System.in);
+				break;
 			case 0:
 				fin =1;
 				break;
 			}
 			System.out.println();
 		}
-		System.out.println("Bye!");
+		System.out.print("Bye!");
 	}
 	
 	static void menu() {
@@ -39,6 +49,8 @@ public class Main {
 		System.out.println("2) Add purchase");
 		System.out.println("3) Show list of purchases");
 		System.out.println("4) Balance");
+		System.out.println("5) Save");
+		System.out.println("6) Load");
 		System.out.println("0) Exit");
 	}
 	static void purchaseMenu() {
@@ -152,5 +164,61 @@ public class Main {
 				System.out.println("Purchase was added!");
 			}
 		}
+	}
+
+	static void saveData() {
+		File f = new File("C:\\Users\\HP\\eclipse-work\\zhard7\\src\\budgetManager\\purchases.txt");
+		try {
+            if(!f.exists())
+                f.createNewFile();
+            FileWriter fw = new FileWriter(f);
+            if(budget.purchases.size() > 0) {
+                fw.write(String.format("%.2f", budget.balance));
+                for (int i = 0; i < budget.purchases.size(); i++) {
+                    fw.append("\n" + budget.purchases.get(i).allInfo());
+                }
+            }
+            System.out.println("\nPurchases were saved!");
+            fw.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	static void loadData() {
+		File f = new File("C:\\Users\\HP\\eclipse-work\\zhard7\\src\\budgetManager\\purchases.txt");
+		try {
+            if(f.exists()) {
+                sc = new Scanner(f);
+                if(sc.hasNext())
+                    budget.balance = Double.parseDouble(sc.nextLine());
+                while(sc.hasNext()) {
+                    String s = sc.nextLine();
+                    String[] data = sc.nextLine().split("\\$");
+                    Type type = null;
+                    if(s.equals("1"))
+                        type = Type.Food;
+                    else if(s.equals("2"))
+                        type = Type.Clothes;
+                    else if(s.equals("3"))
+                        type = Type.Entertainment;
+                    else if(s.equals("4"))
+                        type = Type.Other;
+                    
+                    if(data[data.length-1].matches("\\d+.\\d+")) {
+                    	String name = data[0];
+                    	for (int i = 1; i < data.length-1; i++) 
+							name += "$" + data[i];
+                        Purchase p = new Purchase(Double.parseDouble(data[data.length-1]), name.trim(), type);
+                        budget.purchases.add(p);
+                    }
+                }
+                System.out.println("\nPurchases were loaded!");
+                sc.close();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 }
