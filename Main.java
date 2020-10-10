@@ -3,6 +3,7 @@ package budgetManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -34,6 +35,9 @@ public class Main {
 				loadData();
 				sc = new Scanner(System.in);
 				break;
+			case 7:
+				analyze();
+				break;
 			case 0:
 				fin =1;
 				break;
@@ -51,6 +55,7 @@ public class Main {
 		System.out.println("4) Balance");
 		System.out.println("5) Save");
 		System.out.println("6) Load");
+		System.out.println("7) Analyze (Sort)");
 		System.out.println("0) Exit");
 	}
 	static void purchaseMenu() {
@@ -69,6 +74,20 @@ public class Main {
 		System.out.println("4) Other");
 		System.out.println("5) All");
 		System.out.println("6) Back");
+	}
+	static void menuSort() {
+		System.out.println("\nHow do you want to sort?");
+		System.out.println("1) Sort all purchases");
+		System.out.println("2) Sort by type");
+		System.out.println("3) Sort certain type");
+		System.out.println("4) Back");
+	}
+	static void purchaseMenuSort() {
+		System.out.println("\nChoose the type of purchase");
+		System.out.println("1) Food");
+		System.out.println("2) Clothes");
+		System.out.println("3) Entertainment");
+		System.out.println("4) Other");
 	}
 	
 	static void addIncome() {
@@ -221,4 +240,110 @@ public class Main {
             e.printStackTrace();
         }
 	}
+
+	static void analyze() {
+		int fin = 0;
+		while(fin == 0) {
+			menuSort();
+			int ch = Integer.valueOf(sc.nextLine());
+			switch (ch) {
+			case 1:
+				sortAll();
+				break;
+			case 2:
+				sortByTypes();
+				break;
+			case 3:
+				sortCertainType();
+				break;
+			case 4:
+				fin = 1;
+				break;
+			}
+		}
+	}
+	static void sortByTypes() {
+		ArrayList<Double> array = new ArrayList<Double>();
+		array.add(budget.sum(Type.Food));
+		array.add(budget.sum(Type.Clothes));
+		array.add(budget.sum(Type.Entertainment));
+		array.add(budget.sum(Type.Other));
+		sort(array);
+		
+		System.out.println("\nTypes:");
+		System.out.printf("Food - $%.2f\n",array.get(0));
+		System.out.printf("Entertainment - $%.2f\n",array.get(1));
+		System.out.printf("Clothes - $%.2f\n",array.get(2));
+		System.out.printf("Other - $%.2f\n",array.get(3));
+		budget.totalSum();
+	}
+	static void sortCertainType() {
+		purchaseMenuSort();
+		int ch = Integer.valueOf(sc.nextLine());
+		Type type = null;
+		switch (ch) {
+		case 1:
+			type = Type.Food;
+			break;
+		case 2:
+			type = Type.Clothes;
+			break;
+		case 3:
+			type = Type.Entertainment;
+			break;
+		case 4:
+			type = Type.Other;
+			break;
+		}
+		int n = 0;
+		ArrayList<Purchase> array = new ArrayList<Purchase>();
+		for (int i = 0; i < budget.purchases.size(); i++) {
+			if(budget.purchases.get(i).getType() == type) {
+				array.add(budget.purchases.get(i));
+				n++;
+			}
+		}
+		if(n > 0) {
+			System.out.println("\n" + type.toString() + ":");
+			sort2(array);
+			budget.totalSum(type);
+		}
+		else
+			System.out.println("\nPurchase list is empty");
+	}
+	static void sortAll() {
+		if(budget.purchases.size() > 0) {
+			System.out.println("\nAll:");
+			budget.sort();
+			budget.totalSum();
+		}
+		else
+			System.out.println("\nPurchase list is empty");
+	}
+	
+	static void sort(ArrayList<Double> array){
+		for (int i = 0; i < array.size() - 1; i++) {
+			for (int j = 0; j < array.size() - i - 1; j++) {
+				if(array.get(j) < array.get(j + 1)) {
+					double c = array.get(j);
+					array.set(j, array.get(j+ 1));
+					array.set(j+1, c);
+				}
+			}
+		}
+	}
+	static void sort2(ArrayList<Purchase> purchases){
+        for (int i = 0; i < purchases.size() - 1; i++) {
+            for (int j = 0; j < purchases.size() - i - 1; j++) {
+                if(purchases.get(j).getPrice() < purchases.get(j + 1).getPrice()) {
+                	Purchase p = purchases.get(j);
+                	purchases.set(j, purchases.get(j+1));
+                	purchases.set(j+1, p);
+                }
+            }
+        }
+        for (int i = 0; i < purchases.size(); i++) {
+			System.out.println(purchases.get(i).toString());
+		}
+    }
 }

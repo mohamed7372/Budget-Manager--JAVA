@@ -34,8 +34,12 @@ class Purchase {
     public String toString() {
         return String.format("%s $%.2f", this.getName(), this.getPrice());
     }
-
     public String allInfo() {
         return getType().getNum() + "\n" + getName() + " $" + getPrice();
+    }
+    public void changeInfo(Type type, String name, double price) {
+    	this.name = name;
+    	this.price = price;
+    	this.type = type;
     }
 }
